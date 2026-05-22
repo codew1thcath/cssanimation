@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>CSS Animations Lab — Galactic Terminal</title>
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet"/>
+
+  <style>
+    /* =============================================
+       CUSTOM PROPERTIES — GALACTIC TERMINAL THEME
+    ============================================= */
+    :root {
+      --bg:          #050a12;
+      --panel:       #0b1424;
+      --border:      #1a3a5c;
+      --glow-cyan:   #00e5ff;
+      --glow-green:  #39ff14;
+      --glow-pink:   #ff2d78;
+      --glow-amber:  #ffb700;
+      --glow-purple: #c940ff;
+      --text:        #c8e0f0;
+      --dim:         #4a6a88;
+      --font-display: 'Orbitron', monospace;
+      --font-mono:    'Share Tech Mono', monospace;
+    }
+
+    /* =============================================
+       RESET & BASE
+    ============================================= */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-mono);
+      min-height: 100vh;
+      padding: 40px 24px 80px;
+      /* Subtle star-field grid background */
+      background-image:
+        radial-gradient(1px 1px at 10% 20%, rgba(0,229,255,0.3) 0%, transparent 100%),
+        radial-gradient(1px 1px at 80% 60%, rgba(57,255,20,0.25) 0%, transparent 100%),
+        radial-gradient(1px 1px at 55% 90%, rgba(201,64,255,0.2) 0%, transparent 100%),
+        radial-gradient(1px 1px at 30% 75%, rgba(0,229,255,0.2) 0%, transparent 100%),
+        linear-gradient(180deg, #050a12 0%, #07111f 100%);
+    }
+
+    /* =============================================
+       SCANLINE OVERLAY
+    ============================================= */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(0, 0, 0, 0.08) 2px,
+        rgba(0, 0, 0, 0.08) 4px
+      );
+      pointer-events: none;
+      z-index: 9999;
+    }
+
+    /* =============================================
+       HEADER
+    ============================================= */
+    header {
+      text-align: center;
+      margin-bottom: 60px;
+      position: relative;
+    }
+
+    .header-tag {
+      font-size: 0.7rem;
+      letter-spacing: 0.3em;
+      color: var(--glow-cyan);
+      text-transform: uppercase;
+      margin-bottom: 10px;
+      opacity: 0.7;
+    }
+
+    h1 {
+      font-family: var(--font-display);
+      font-weight: 900;
+      font-size: clamp(1.6rem, 4vw, 3rem);
+      letter-spacing: 0.08em;
+      color: #fff;
+      text-shadow:
+        0 0 10px var(--glow-cyan),
+        0 0 40px rgba(0,229,255,0.3);
+      line-height: 1.2;
+    }
+
+    .subtitle {
+      margin-top: 10px;
+      font-size: 0.75rem;
+      color: var(--dim);
+      letter-spacing: 0.2em;
+    }
+
+    /* =============================================
+       SECTION LABEL
+    ============================================= */
+    .section-label {
+      font-family: var(--font-display);
+      font-size: 0.65rem;
+      letter-spacing: 0.35em;
+      text-transform: uppercase;
+      color: var(--glow-cyan);
+      margin-bottom: 20px;
+      padding-left: 14px;
+      border-left: 2px solid var(--glow-cyan);
+    }
+
+    section {
+      max-width: 960px;
+      margin: 0 auto 70px;
+    }
+
+    h2 {
+      font-family: var(--font-display);
+      font-size: 1rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      margin-bottom: 24px;
+      color: #fff;
+    }
+
+    /* =============================================
+       PANEL / CARD WRAPPER
+    ============================================= */
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 28px;
+      position: relative;
+    }
+
+    .panel::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--glow-cyan), transparent);
+      opacity: 0.5;
+    }
+
+    /* =============================================
+       PART 1 — TRANSITION BOXES
+       4 boxes, each with a different transition
+    ============================================= */
+    .boxes-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 20px;
+    }
+
+    .box {
+      width: 100%;
+      aspect-ratio: 1;
+      max-width: 160px;
+      margin: 0 auto;
+      border-radius: 4px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-display);
+      font-size: 0.55rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      cursor: pointer;
+      border: 1px solid;
+    }
+
+    .box span { margin-top: 8px; font-size: 0.5rem; opacity: 0.6; }
+
+    /* Box 1: Color change — ease timing */
+    .box-1 {
+      background: #0e1f33;
+      color: var(--glow-cyan);
+      border-color: var(--glow-cyan);
+      /* TRANSITION 1: background-color, ease (general purpose default) */
+      transition: background-color 0.4s ease, color 0.4s ease, box-shadow 0.4s ease;
+    }
+    .box-1:hover {
+      background: var(--glow-cyan);
+      color: #000;
+      box-shadow: 0 0 24px var(--glow-cyan), 0 0 60px rgba(0,229,255,0.3);
+    }
+
+    /* Box 2: Scale — ease-out (enters fast, lands smooth) */
+    .box-2 {
+      background: #1a0d1f;
+      color: var(--glow-purple);
+      border-color: var(--glow-purple);
+      /* TRANSITION 2: transform scale, ease-out — great for elements "arriving" */
+      transition: transform 0.3s ease-out, box-shadow 0.3s ease-out;
+    }
+    .box-2:hover {
+      transform: scale(1.18);
+      box-shadow: 0 0 28px var(--glow-purple), 0 0 60px rgba(201,64,255,0.25);
+    }
+
+    /* Box 3: Border-radius morph — ease-in-out (smooth both ends) */
+    .box-3 {
+      background: #1a1200;
+      color: var(--glow-amber);
+      border-color: var(--glow-amber);
+      /* TRANSITION 3: border-radius morph, ease-in-out — sliding/panel feel */
+      transition: border-radius 0.5s ease-in-out, box-shadow 0.5s ease-in-out;
+    }
+    .box-3:hover {
+      border-radius: 50%;
+      box-shadow: 0 0 28px var(--glow-amber), 0 0 60px rgba(255,183,0,0.25);
+    }
+
+    /* Box 4: translateY lift — cubic-bezier (custom spring feel) */
+    .box-4 {
+      background: #120717;
+      color: var(--glow-pink);
+      border-color: var(--glow-pink);
+      /* TRANSITION 4: translateY lift, cubic-bezier — custom spring/overshoot */
+      transition: transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.45s ease;
+    }
+    .box-4:hover {
+      transform: translateY(-18px);
+      box-shadow: 0 18px 40px rgba(255,45,120,0.3), 0 0 20px var(--glow-pink);
+    }
+
+    /* =============================================
+       PART 2 — @KEYFRAMES ANIMATIONS
+
+       SPIN: loader element, 360deg continuous
+    ============================================= */
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to   { transform: rotate(360deg); }
+    }
+
+    /* BOUNCE: 3+ keyframe stops, translateY parabola */
+    @keyframes bounce {
+      0%   { transform: translateY(0)    scaleX(1); }
+      40%  { transform: translateY(-38px) scaleX(0.92); }
+      55%  { transform: translateY(-42px) scaleX(0.88); }
+      70%  { transform: translateY(-10px) scaleX(1.05); }
+      85%  { transform: translateY(-28px) scaleX(0.95); }
+      100% { transform: translateY(0)    scaleX(1); }
+    }
+
+    /* FADE IN: slide up and reveal — stays at end (fill-mode: forwards) */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(22px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .animations-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 28px;
+      align-items: flex-end;
+    }
+
+    .anim-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .anim-label {
+      font-size: 0.58rem;
+      letter-spacing: 0.18em;
+      color: var(--dim);
+      text-transform: uppercase;
+      text-align: center;
+    }
+
+    /* Spin Loader */
+    .loader {
+      width: 64px;
+      height: 64px;
+      border: 3px solid rgba(0,229,255,0.15);
+      border-top-color: var(--glow-cyan);
+      border-right-color: var(--glow-cyan);
+      border-radius: 50%;
+      /* ANIMATION: spin, linear (constant speed for loaders) */
+      animation: spin 1.2s linear infinite;
+      box-shadow: 0 0 12px rgba(0,229,255,0.3);
+    }
+
+    /* Bounce Box */
+    .bounce-box {
+      width: 64px;
+      height: 64px;
+      background: var(--glow-green);
+      border-radius: 6px;
+      box-shadow: 0 0 14px rgba(57,255,20,0.4);
+      /* ANIMATION: bounce, ease-in-out, infinite */
+      animation: bounce 1.4s ease-in-out infinite;
+    }
+
+    /* Fade-in box (animation-fill-mode: forwards — stays at end state) */
+    @keyframes revealSlide {
+      0%   { opacity: 0; transform: translateX(-30px) skewX(-5deg); }
+      60%  { opacity: 1; transform: translateX(4px)  skewX(1deg); }
+      100% { opacity: 1; transform: translateX(0)    skewX(0); }
+    }
+
+    .fade-box {
+      width: 130px;
+      height: 64px;
+      background: linear-gradient(135deg, #0e1f33, #12102b);
+      border: 1px solid var(--glow-purple);
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-display);
+      font-size: 0.55rem;
+      letter-spacing: 0.12em;
+      color: var(--glow-purple);
+      /* ANIMATION: revealSlide with fill-mode: forwards — stops at final frame */
+      animation: revealSlide 1.1s cubic-bezier(0.22, 1, 0.36, 1) 0.3s forwards;
+      opacity: 0; /* starts hidden; forwards keeps final opacity:1 */
+    }
+
+    /* =============================================
+       PART 3 — HOVER + KEYFRAMES COMBINED
+
+       WIGGLE: 4+ keyframe stops, hover-triggered
+    ============================================= */
+    @keyframes wiggle {
+      0%   { transform: rotate(0deg)   scale(1); }
+      15%  { transform: rotate(-14deg) scale(1.04); }
+      30%  { transform: rotate(13deg)  scale(1.04); }
+      45%  { transform: rotate(-9deg)  scale(1.02); }
+      60%  { transform: rotate(8deg)   scale(1.02); }
+      75%  { transform: rotate(-4deg)  scale(1.01); }
+      100% { transform: rotate(0deg)   scale(1); }
+    }
+
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+    }
+
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 28px 20px;
+      text-align: center;
+      cursor: pointer;
+      /* TRANSITION: border-color and glow, smooth on hover (ease) */
+      transition: border-color 0.25s ease, box-shadow 0.25s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, transparent 60%, rgba(0,229,255,0.04));
+      pointer-events: none;
+    }
+
+    .card:hover {
+      /* HOVER triggers the wiggle keyframe animation — 4+ stops */
+      animation: wiggle 0.55s ease-in-out;
+      border-color: var(--glow-cyan);
+      box-shadow: 0 0 20px rgba(0,229,255,0.2), inset 0 0 20px rgba(0,229,255,0.03);
+    }
+
+    .card-icon {
+      font-size: 2rem;
+      margin-bottom: 12px;
+      display: block;
+    }
+
+    .card-title {
+      font-family: var(--font-display);
+      font-size: 0.65rem;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      color: #fff;
+      margin-bottom: 8px;
+    }
+
+    .card-body {
+      font-size: 0.65rem;
+      color: var(--dim);
+      line-height: 1.7;
+    }
+
+    /* =============================================
+       LEGEND / CHECKLIST
+    ============================================= */
+    .checklist {
+      list-style: none;
+      display: grid;
+      gap: 10px;
+    }
+
+    .checklist li {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      font-size: 0.72rem;
+      line-height: 1.6;
+      color: var(--text);
+      padding: 10px 14px;
+      border: 1px solid var(--border);
+      border-radius: 3px;
+      transition: border-color 0.2s ease, background 0.2s ease;
+    }
+
+    .checklist li:hover {
+      border-color: var(--glow-green);
+      background: rgba(57,255,20,0.03);
+    }
+
+    .checklist li input[type="checkbox"] {
+      accent-color: var(--glow-green);
+      width: 14px;
+      height: 14px;
+      margin-top: 2px;
+      flex-shrink: 0;
+    }
+
+    .pts {
+      margin-left: auto;
+      font-family: var(--font-display);
+      font-size: 0.6rem;
+      color: var(--glow-cyan);
+      white-space: nowrap;
+    }
+
+    /* =============================================
+       FOOTER
+    ============================================= */
+    footer {
+      text-align: center;
+      font-size: 0.6rem;
+      letter-spacing: 0.18em;
+      color: var(--dim);
+      padding-top: 20px;
+      border-top: 1px solid var(--border);
+      max-width: 960px;
+      margin: 0 auto;
+    }
+
+    footer span { color: var(--glow-cyan); }
+
+    /* =============================================
+       DIVIDER
+    ============================================= */
+    .divider {
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--border), transparent);
+      margin: 0 0 60px;
+    }
+
+  </style>
+</head>
+<body>
+
+  <!-- ==================== HEADER ==================== -->
+  <header>
+    <h1>GALACTIC TERMINAL<br>ANIMATION LAB</h1>
+    <p class="subtitle">CSS Transitions &amp; Keyframe Animations</p>
+  </header>
+
+  <!-- ==================== PART 1: TRANSITIONS ==================== -->
+  <section>
+    <p class="section-label">Part 01 — CSS Transitions</p>
+    <h2>Four Hover Transitions (Different Properties)</h2>
+    <div class="panel">
+      <div class="boxes-grid">
+
+        <!-- Box 1: background-color, ease -->
+        <!-- TIMING: ease — slow start, fast middle, slow end — general purpose -->
+        <div class="box box-1">
+          SYS.COLOR
+          <span>ease · 0.4s</span>
+        </div>
+
+        <!-- Box 2: transform scale, ease-out -->
+        <!-- TIMING: ease-out — fast start, slow finish — elements "arriving" -->
+        <div class="box box-2">
+          SYS.SCALE
+          <span>ease-out · 0.3s</span>
+        </div>
+
+        <!-- Box 3: border-radius morph, ease-in-out -->
+        <!-- TIMING: ease-in-out — slow on both ends — toggles and panels -->
+        <div class="box box-3">
+          SYS.MORPH
+          <span>ease-in-out · 0.5s</span>
+        </div>
+
+        <!-- Box 4: translateY lift, cubic-bezier -->
+        <!-- TIMING: cubic-bezier(0.34,1.56,0.64,1) — custom spring with overshoot -->
+        <div class="box box-4">
+          SYS.LIFT
+          <span>cubic-bezier · 0.45s</span>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- ==================== PART 2: @KEYFRAMES ==================== -->
+  <section>
+    <p class="section-label">Part 02 — @keyframes Animations</p>
+    <h2>Spin · Bounce · Fill-Mode Forwards</h2>
+    <div class="panel">
+      <div class="animations-row">
+
+        <!-- SPIN: linear timing — constant speed, perfect for loaders -->
+        <div class="anim-item">
+          <div class="loader"></div>
+          <p class="anim-label">@keyframes spin<br>linear · infinite</p>
+        </div>
+
+        <!-- BOUNCE: ease-in-out, 6 keyframe stops, infinite loop -->
+        <div class="anim-item">
+          <div class="bounce-box"></div>
+          <p class="anim-label">@keyframes bounce<br>6 stops · infinite</p>
+        </div>
+
+        <!-- REVEAL (fadeIn): cubic-bezier · fill-mode: forwards (stays at end state) -->
+        <div class="anim-item">
+          <div class="fade-box">ONLINE</div>
+          <p class="anim-label">@keyframes revealSlide<br>fill-mode: forwards</p>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- ==================== PART 3: HOVER + KEYFRAMES ==================== -->
+  <section>
+    <p class="section-label">Part 03 — Hover-Triggered @keyframes</p>
+    <h2>Wiggle Cards — Hover to Activate (4+ Keyframe Stops)</h2>
+    <div class="panel">
+      <div class="card-grid">
+
+        <div class="card">
+          <span class="card-icon">⚡</span>
+          <p class="card-title">PULSE NODE</p>
+          <p class="card-body">Hover to trigger the wiggle animation via :hover + @keyframes.</p>
+        </div>
+
+        <div class="card">
+          <span class="card-icon">🛰️</span>
+          <p class="card-title">ORBIT MODULE</p>
+          <p class="card-body">Multi-step rotation with ease-in-out and 7 keyframe stops.</p>
+        </div>
+
+        <div class="card">
+          <span class="card-icon">🔬</span>
+          <p class="card-title">SCAN UNIT</p>
+          <p class="card-body">Border glows via transition while body shakes via keyframes.</p>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+
+</body>
+</html>
